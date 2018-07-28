@@ -1,0 +1,44 @@
+{% extends "orders/base.html" %}
+
+{% block title %}Register{% endblock %}
+
+{% block content %}
+    <h1>Register</h1>
+    {% if error_message %}
+    	<p><strong>
+    		{{error_message}}
+    	</strong></p>
+    {% endif %}
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">Register</h5>
+            <form role="form" action="" method="post">
+                {% csrf_token %}
+                {% include 'orders/form-template.html' %}
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}
+
+{% block cart %}
+<div class="card" style="width: 18rem;">
+  <div class="card-body">
+    <h5 class="card-title">Your Cart</h5>
+      <ul class="list-group list-group-flush">
+        <a href="#" class="list-group-item list-group-item-action">
+            Large Pizza
+        </a>
+        <button type="button" class="btn btn-outline-danger btn-sm">Remove from Cart</button>
+        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+
+      </ul>
+      <br>
+      <button type="button" class="btn btn-outline-primary btn-sm">Checkout</button>
+  </div>
+</div>
+{% endblock %}
+
+{% block footer %}{% endblock %}
