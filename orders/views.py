@@ -51,7 +51,6 @@ class UserFormView(View):
 
             # hash the password
             user.set_password(password)
-
             user.save()
 
             # returns user object if credentials are correct
