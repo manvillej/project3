@@ -12,7 +12,12 @@ class ItemType(models.Model):
 
 class Item(models.Model):
     # TODO: Item docstring
-    item_type = models.ForeignKey(ItemType, on_delete=models.CASCADE, related_name="ItemType")
+    item_type = models.ForeignKey(
+        ItemType,
+        on_delete=models.CASCADE,
+        related_name="items",
+        )
+
     name = models.CharField(max_length=64)
     description = models.CharField(max_length=400)
 
@@ -22,16 +27,30 @@ class Item(models.Model):
 
 class Topping(models.Model):
     # TODO: Topping docstring
-    item_type = models.ForeignKey(ItemType, on_delete=models.CASCADE, blank=True, null=True, )
-    item = models.ForeignKey(Item, on_delete=models.CASCADE, blank=True, null=True, )
+    item_type = models.ForeignKey(
+        ItemType,
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True,
+        related_name="toppings",
+        )
+
+    item = models.ForeignKey(
+        Item,
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True,
+        related_name="toppings",
+        )
+
     name = models.CharField(max_length=64)
     price = models.DecimalField(max_digits=6, decimal_places=2)
 
     def __str__(self):
         if(self.item):
-            return f'{self.item} - {self.name} - {self.price}'
+            return f'{self.name} - {self.price} for {self.item}'
         elif(self.item_type):
-            return f'{self.item_type} - {self.name} - ${self.price}'
+            return f'{self.name} - ${self.price} for {self.item_type}'
         else:
             return 'Error, topping requires item or item_type'
 
@@ -53,7 +72,7 @@ class Size(models.Model):
         choices=SIZES,
         default=regular,
     )
-    item = models.ForeignKey(Item, on_delete=models.CASCADE, related_name="Item")
+    item = models.ForeignKey(Item, on_delete=models.CASCADE, related_name="size")
     price = models.DecimalField(max_digits=6, decimal_places=2)
 
     def __str__(self):
