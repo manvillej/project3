@@ -7,5 +7,6 @@ urlpatterns = [
     path('home', views.index, name="home"),
     path('register', views.UserFormView.as_view(), name="register"),
     path('login/', auth_views.login, {'template_name':'orders/login.html'}, name="login"),
+    path('logout/', auth_views.logout,  {'next_page': '/'}, name="logout"),
     path("menu", views.menu, name="menu"),
 ]
