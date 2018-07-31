@@ -60,9 +60,11 @@
                 {% block content %}{% endblock %}
             </div>
 
+            {% if user.is_authenticated %}
             <div id="cart" class="col-sm-3">
                 {% include 'orders/cart-template.html' %}
             </div>
+            {% endif %}
         </div>
     </div>
 </body>
