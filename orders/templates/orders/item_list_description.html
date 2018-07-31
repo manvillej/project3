@@ -1,0 +1,3 @@
+<li class="list-group-item">
+    {{item.name}} - {% for size in item.size.all %}{{size.name}} - ${{size.price}} {% endfor %}
+</li>

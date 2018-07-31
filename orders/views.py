@@ -6,6 +6,7 @@ from django.contrib.auth import authenticate, login
 from django.views.generic import View
 from django.template import loader
 from .forms import UserForm
+from .models import ItemType, Item
 
 # Create your views here.
 def index(request):
@@ -19,7 +20,12 @@ def index(request):
 
 def menu(request):
     # TODO: menu docstring
-    return HttpResponse("Project 3: Menu TODO")
+    template = loader.get_template("orders/menu.html")
+    context = {
+        "item_type":ItemType.objects.all(),
+        "Items":Item,
+    }
+    return HttpResponse(template.render(context, request))
 
 class UserFormView(View):
     """"""
