@@ -8,6 +8,7 @@ from django.template import loader
 from .forms import UserForm, BasicFoodForm, CheckoutForm, OneToppingFoodForm, TwoToppingFoodForm, ThreeToppingFoodForm, FiveToppingFoodForm
 from .models import ItemType, Item, Cart, OrderedItem, Size, new, ordered, complete, OrderedTopping
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db import IntegrityError
 
 # Create your views here.
 def index(request):
@@ -174,7 +175,11 @@ class BasicFoodFormView(LoginRequiredMixin, View):
 
             current_user = request.user
 
+            # if the cart doesn't exist, create it.
             cart = Cart.objects.filter(customer=current_user, state=new).first()
+            if(not cart):
+                cart = Cart(customer=current_user, state=new)
+                cart.save()
 
             ordered_item = OrderedItem(cart=cart, item=item, size=size)
             ordered_item.save()
@@ -255,6 +260,11 @@ class CheckOutFormView(LoginRequiredMixin, View):
         # need customer's current cart
         cart = Cart.objects.filter(customer=current_user, state=new).first()
 
+        # if the cart doesn't exist, create it.
+        if(not cart):
+            cart = Cart(customer=current_user, state=new)
+            cart.save()
+
         # redirect to menu if cart is empty
         if(not cart.ordered_items.all()):
             return redirect('menu')
@@ -264,7 +274,7 @@ class CheckOutFormView(LoginRequiredMixin, View):
             'cart':cart,
             "item_type":ItemType.objects.all(),
             "Items":Item,
-            'form': form,
+            'form':form,
         }
         return render(request, self.template_name, context)
 

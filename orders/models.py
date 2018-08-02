@@ -1,6 +1,4 @@
 from django.db import models
-import uuid
-from django.contrib.auth.models import AbstractUser
 from django.contrib.auth import get_user_model
 
 # https://docs.djangoproject.com/en/2.0/topics/auth/customizing/#using-a-custom-user-model-when-starting-a-project
