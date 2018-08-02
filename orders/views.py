@@ -5,7 +5,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
 from django.views.generic import View
 from django.template import loader
-from .forms import UserForm, BasicFoodForm, CheckoutForm, OneToppingFoodForm
+from .forms import UserForm, BasicFoodForm, CheckoutForm, OneToppingFoodForm, TwoToppingFoodForm, ThreeToppingFoodForm, FiveToppingFoodForm
 from .models import ItemType, Item, Cart, OrderedItem, Size, new, ordered, complete, OrderedTopping
 
 # Create your views here.
@@ -36,6 +36,16 @@ def menu(request):
     }
     return HttpResponse(template.render(context, request))
 
+
+def carts(request):
+    # TODO: docstring
+    template = loader.get_template("orders/carts.html")
+    current_user = request.user
+    carts = Cart.objects.filter(state=ordered)
+    context = {
+        'carts':carts,
+    }
+    return HttpResponse(template.render(context, request))
 
 class UserFormView(View):
     """"""
@@ -94,9 +104,20 @@ class BasicFoodFormView(View):
         """display a blank form"""
         # TODO: UserFormView.get docstring
 
+        # set the current form to be no toppings
         form = self.form_class(item_id=item_id)
-        if(item_id==2):
+
+        # get current item
+        item = Item.objects.get(id=item_id)
+        # override form if item's num_toppings is 1,2,3, or 5
+        if(item.num_toppings==1):
             form = OneToppingFoodForm(item_id=item_id)
+        if(item.num_toppings==2):
+            form = TwoToppingFoodForm(item_id=item_id)
+        if(item.num_toppings==3):
+            form = ThreeToppingFoodForm(item_id=item_id)
+        if(item.num_toppings==5):
+            form = FiveToppingFoodForm(item_id=item_id)
 
 
         current_user = request.user
@@ -115,16 +136,26 @@ class BasicFoodFormView(View):
     def post(self, request, item_id):
         """Process form data"""
         # TODO: UserFormView.post docstring
-        if(item_id==2):
+
+        # get current item
+        item = Item.objects.get(id=item_id)
+        # override form if item's num_toppings is 1,2,3, or 5
+        if(item.num_toppings==1):
             form = OneToppingFoodForm(request.POST, item_id=item_id)
+        if(item.num_toppings==2):
+            form = TwoToppingFoodForm(request.POST, item_id=item_id)
+        if(item.num_toppings==3):
+            form = ThreeToppingFoodForm(request.POST, item_id=item_id)
+        if(item.num_toppings==5):
+            form = FiveToppingFoodForm(request.POST, item_id=item_id)
         else:
             form = self.form_class(request.POST, item_id=item_id)
 
         if(form.is_valid()):
 
             # cleaned normalized data
-            item = form.cleaned_data['item']
-            size = form.cleaned_data['size']
+            item = form.cleaned_data.pop('item')
+            size = form.cleaned_data.pop('size')
 
             current_user = request.user
 
@@ -133,10 +164,13 @@ class BasicFoodFormView(View):
             ordered_item = OrderedItem(cart=cart, item=item, size=size)
             ordered_item.save()
 
-            if(item_id==2):
-                topping = form.cleaned_data['topping']
-                ordered_topping = OrderedTopping(ordered_item=ordered_item, topping=topping)
-                ordered_topping.save()
+            # loop through all the toppings
+            for key in form.cleaned_data:
+                topping = form.cleaned_data[key]
+                # if the field is not filled out, do not add it as an topping
+                if(topping):
+                    ordered_topping = OrderedTopping(ordered_item=ordered_item, topping=topping)
+                    ordered_topping.save()
 
             return redirect('menu')
 
@@ -188,3 +222,5 @@ class CheckOutFormView(View):
             return redirect('menu')
 
         return render(request, self.template_name, {'form': form})
+
+

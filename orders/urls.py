@@ -11,4 +11,5 @@ urlpatterns = [
     path("menu", views.menu, name="menu"),
     path('food/<int:item_id>/', views.BasicFoodFormView.as_view()),
     path('checkout', views.CheckOutFormView.as_view()),
+    path('carts', views.carts, name="carts"),
 ]

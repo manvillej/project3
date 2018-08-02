@@ -27,7 +27,7 @@
                         <a class="nav-link" href="{% url 'menu' %}">Menu</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Cart</a>
+                        <a class="nav-link" href="{% url 'carts' %}">Carts</a>
                     </li>
                     {% if user.is_authenticated %}
                     <li class="nav-item">

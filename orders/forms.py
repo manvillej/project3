@@ -29,7 +29,9 @@ class BasicFoodForm(forms.ModelForm):
 
 
 class OneToppingFoodForm(forms.ModelForm):
-    topping = forms.ModelChoiceField(queryset=Topping.objects.all())
+    topping = forms.ModelChoiceField(
+        queryset=Topping.objects.all(),
+        required=False,)
 
     class Meta:
         model = OrderedItem
@@ -47,8 +49,12 @@ class OneToppingFoodForm(forms.ModelForm):
 
 
 class TwoToppingFoodForm(forms.ModelForm):
-    topping = forms.ModelChoiceField(queryset=Topping.objects.all())
-    topping2 = forms.ModelChoiceField(queryset=Topping.objects.all())
+    topping = forms.ModelChoiceField(
+        queryset=Topping.objects.all(),
+        required=False,)
+    topping2 = forms.ModelChoiceField(
+        queryset=Topping.objects.all(),
+        required=False,)
 
     class Meta:
         model = OrderedItem
@@ -66,9 +72,15 @@ class TwoToppingFoodForm(forms.ModelForm):
 
 
 class ThreeToppingFoodForm(forms.ModelForm):
-    topping = forms.ModelChoiceField(queryset=Topping.objects.all())
-    topping2 = forms.ModelChoiceField(queryset=Topping.objects.all())
-    topping3 = forms.ModelChoiceField(queryset=Topping.objects.all())
+    topping = forms.ModelChoiceField(
+        queryset=Topping.objects.all(),
+        required=False,)
+    topping2 = forms.ModelChoiceField(
+        queryset=Topping.objects.all(),
+        required=False,)
+    topping3 = forms.ModelChoiceField(
+        queryset=Topping.objects.all(),
+        required=False,)
 
     class Meta:
         model = OrderedItem
@@ -78,6 +90,38 @@ class ThreeToppingFoodForm(forms.ModelForm):
         item_id = kwargs.pop('item_id')
 
         super(ThreeToppingFoodForm, self).__init__(*args, **kwargs)
+
+        item_set = Item.objects.filter(id=item_id)
+
+        self.fields['item'].queryset = item_set
+        self.fields['size'].queryset = Size.objects.filter(item=item_set[0])
+
+
+class FiveToppingFoodForm(forms.ModelForm):
+    topping = forms.ModelChoiceField(
+        queryset=Topping.objects.all(),
+        required=False,)
+    topping2 = forms.ModelChoiceField(
+        queryset=Topping.objects.all(),
+        required=False,)
+    topping3 = forms.ModelChoiceField(
+        queryset=Topping.objects.all(),
+        required=False,)
+    topping4 = forms.ModelChoiceField(
+        queryset=Topping.objects.all(),
+        required=False,)
+    topping5 = forms.ModelChoiceField(
+        queryset=Topping.objects.all(),
+        required=False,)
+
+    class Meta:
+        model = OrderedItem
+        fields = ['item', 'size']
+
+    def __init__(self, *args, **kwargs):
+        item_id = kwargs.pop('item_id')
+
+        super(FiveToppingFoodForm, self).__init__(*args, **kwargs)
 
         item_set = Item.objects.filter(id=item_id)
 

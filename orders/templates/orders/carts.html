@@ -1,0 +1,12 @@
+{% extends "orders/components/cart_center_base.html" %}
+
+{% block title %}Checkout{% endblock %}
+
+{% block content %}
+    {% for cart in carts %}
+                {% include 'orders/components/ordered_cart.html' %}
+                <br>
+    {% endfor %}
+{% endblock %}
+
+{% block footer %}{% endblock %}
