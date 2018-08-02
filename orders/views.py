@@ -6,7 +6,7 @@ from django.contrib.auth import authenticate, login
 from django.views.generic import View
 from django.template import loader
 from .forms import UserForm, BasicFoodForm, CheckoutForm, OneToppingFoodForm
-from .models import ItemType, Item, Cart, OrderedItem, Size, new, ordered, complete
+from .models import ItemType, Item, Cart, OrderedItem, Size, new, ordered, complete, OrderedTopping
 
 # Create your views here.
 def index(request):
@@ -15,7 +15,7 @@ def index(request):
 
     # context for passing user and cart info.
     current_user = request.user
-    cart = Cart.objects.filter(customer=current_user, state=new)[0]
+    cart = Cart.objects.filter(customer=current_user, state=new).first()
     context = {
         'current_user':request.user,
         'cart':cart,
@@ -27,7 +27,7 @@ def menu(request):
     # TODO: menu docstring
     template = loader.get_template("orders/menu.html")
     current_user = request.user
-    cart = Cart.objects.filter(customer=current_user, state=new)[0]
+    cart = Cart.objects.filter(customer=current_user, state=new).first()
     context = {
         'current_user':request.user,
         'cart':cart,
@@ -69,11 +69,9 @@ class UserFormView(View):
             user.set_password(password)
             user.save()
 
-
-            # TODO: uncomment this section
             # create new cart for future orders
-            # cart = Cart(customer=user, state='01')
-            # cart.save()
+            cart = Cart(customer=user, state=new)
+            cart.save()
 
             # returns user object if credentials are correct
             user = authenticate(username=username, password=password)
@@ -102,7 +100,10 @@ class BasicFoodFormView(View):
 
 
         current_user = request.user
-        cart = Cart.objects.filter(customer=current_user, state=new)[0]
+
+        # get current cart
+        cart = Cart.objects.filter(customer=current_user, state=new).first()
+
         context = {
             'current_user':request.user,
             'cart':cart,
@@ -120,7 +121,6 @@ class BasicFoodFormView(View):
             form = self.form_class(request.POST, item_id=item_id)
 
         if(form.is_valid()):
-            user = form.save(commit=False)
 
             # cleaned normalized data
             item = form.cleaned_data['item']
@@ -133,6 +133,10 @@ class BasicFoodFormView(View):
             ordered_item = OrderedItem(cart=cart, item=item, size=size)
             ordered_item.save()
 
+            if(item_id==2):
+                topping = form.cleaned_data['topping']
+                ordered_topping = OrderedTopping(ordered_item=ordered_item, topping=topping)
+                ordered_topping.save()
 
             return redirect('menu')
 
@@ -151,7 +155,7 @@ class CheckOutFormView(View):
         form = self.form_class()
 
         current_user = request.user
-        cart = Cart.objects.filter(customer=current_user, state=new)[0]
+        cart = Cart.objects.filter(customer=current_user, state=new).first()
         context = {
             'current_user':request.user,
             'cart':cart,
@@ -168,19 +172,18 @@ class CheckOutFormView(View):
         form = self.form_class(request.POST)
 
         if(form.is_valid()):
-            user = form.save(commit=False)
             current_user = request.user
+
+            # get current cart
             cart = Cart.objects.filter(customer=current_user, state=new).first()
 
-
-            # TODO uncomment this section
-            # submit old cart
-            # cart.state = ordered
-            # cart.save()
+            # submit current cart
+            cart.state = ordered
+            cart.save()
 
             # create new cart for future orders
-            # cart = Cart(customer=current_user, state='01')
-            # cart.save()
+            cart = Cart(customer=current_user, state=new)
+            cart.save()
 
             return redirect('menu')
 

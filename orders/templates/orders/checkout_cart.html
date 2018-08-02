@@ -4,24 +4,19 @@
             {{current_user}}'s Cart
         </h5>
         <ul class="list-group list-group-flush">
-            {% for ordered_item in cart.ordered_items.all %}
-            <a href="#" class="list-group-item list-group-item-action">
-                {{ordered_item}}
-            </a>
-            {% endfor %}
-            <li class="list-group-item">Total = ${{cart.price}}</li>
+            {% include 'orders/cart.html' %}
         </ul>
-            <br>
-            {% if error_message %}
-    	    <p><strong>
-    		    {{error_message}}
-    	    </strong></p>
-            {% endif %}
-            <form role="form" action="" method="post">
-                {% csrf_token %}
-                <div class="form-group">
-                    <button type="submit" class="btn btn-primary">Checkout</button>
-                </div>
-            </form>
+        <br>
+        {% if error_message %}
+	    <p><strong>
+		    {{error_message}}
+	    </strong></p>
+        {% endif %}
+        <form role="form" action="" method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary">Checkout</button>
+            </div>
+        </form>
     </div>
 </div>

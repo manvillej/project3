@@ -136,7 +136,30 @@ class OrderedItem(models.Model):
     @property
     def price(self):
         """"""
-        return self.size.price
+        total = self.size.price
+        for topping in self.toppings.all():
+            total = total + topping.price
+        return total
 
     def __str__(self):
         return f'{self.size.get_name_display()} {self.item.name} {self.item.item_type.name} - ${self.price}'
+
+
+class OrderedTopping(models.Model):
+    ordered_item = models.ForeignKey(
+        OrderedItem,
+        on_delete=models.CASCADE,
+        related_name="toppings",
+        )
+    topping = models.ForeignKey(
+        Topping,
+        on_delete=models.CASCADE,
+        )
+
+    @property
+    def price(self):
+        return self.topping.price
+
+    def __str__(self):
+        return self.topping.name
+

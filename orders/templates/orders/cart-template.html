@@ -5,11 +5,7 @@
         </h5>
         <ul class="list-group list-group-flush">
             <a href="/checkout" class="btn btn-outline-primary btn-sm" role="button" aria-pressed="true">Checkout</a>
-            {% for ordered_item in cart.ordered_items.all %}
-            <a href="#" class="list-group-item list-group-item-action">
-                {{ordered_item}}
-            </a>
-            {% endfor %}
+            {% include 'orders/cart.html' %}
             <li class="list-group-item">Total = ${{cart.price}}</li>
         </ul>
     </div>
