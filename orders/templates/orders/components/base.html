@@ -55,17 +55,8 @@
         {% endblock %}
     </div>
     <div class="container">
-        <div class="row">
-            <div id="content" class="col-sm-8">
-                {% block content %}{% endblock %}
-            </div>
-
-            {% if user.is_authenticated %}
-            <div id="cart" class="col-sm-4">
-                {% include 'orders/cart-template.html' %}
-            </div>
-            {% endif %}
-        </div>
+        {% block main_section %}
+        {% endblock %}
     </div>
 </body>
 </html>

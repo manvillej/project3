@@ -1,4 +1,4 @@
-{% extends "orders/base.html" %}
+{% extends "orders/components/side_cart_base.html" %}
 
 {% block title %}Item Order{% endblock %}
 
@@ -14,7 +14,7 @@
             <h5 class="card-title">Item Order</h5>
             <form role="form" action="" method="post">
                 {% csrf_token %}
-                {% include 'orders/form-template.html' %}
+                {% include 'orders/components/form_template.html' %}
                 <div class="form-group">
                     <button type="submit" class="btn btn-primary">Submit</button>
                 </div>

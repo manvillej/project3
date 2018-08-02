@@ -1,4 +1,4 @@
-{% extends "orders/base.html" %}
+{% extends "orders/components/side_cart_base.html" %}
 
 {% block title %}Pinocchio's Menu{% endblock %}
 
@@ -8,9 +8,10 @@
         <h5 class="card-header">{{type.name}}</h5>
         <div class="card-body">
             <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-            {% include 'orders/items.html' %}
+            {% include 'orders/components/items.html' %}
         </div>
     </div>
+    </br>
     {% endfor %}
 {% endblock %}
 
