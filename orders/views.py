@@ -12,28 +12,33 @@ from .models import ItemType, Item, Cart, OrderedItem, Size, new, ordered, compl
 def index(request):
     # TODO: index docstring
     template = loader.get_template("orders/index.html")
+    context = {}
 
     # context for passing user and cart info.
     current_user = request.user
-    cart = Cart.objects.filter(customer=current_user, state=new).first()
-    context = {
-        'current_user':request.user,
-        'cart':cart,
-        }
+    if(current_user.is_authenticated):
+        cart = Cart.objects.filter(customer=current_user, state=new).first()
+        context['current_user'] = request.user
+        context['cart'] = cart
+
     return HttpResponse(template.render(context, request))
 
 
 def menu(request):
     # TODO: menu docstring
     template = loader.get_template("orders/menu.html")
-    current_user = request.user
-    cart = Cart.objects.filter(customer=current_user, state=new).first()
     context = {
-        'current_user':request.user,
-        'cart':cart,
-        "item_type":ItemType.objects.all(),
-        "Items":Item,
-    }
+            "item_type":ItemType.objects.all(),
+            "Items":Item,
+        }
+
+    # context for passing user and cart info.
+    current_user = request.user
+    if(current_user.is_authenticated):
+        cart = Cart.objects.filter(customer=current_user, state=new).first()
+        context['current_user'] = request.user
+        context['cart'] = cart
+
     return HttpResponse(template.render(context, request))
 
 
@@ -225,7 +230,10 @@ class CheckOutFormView(View):
         form = self.form_class()
 
         current_user = request.user
+
+        # need customer's current cart
         cart = Cart.objects.filter(customer=current_user, state=new).first()
+
         context = {
             'current_user':request.user,
             'cart':cart,
