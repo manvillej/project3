@@ -1,0 +1,26 @@
+{% extends "orders/base.html" %}
+
+{% block title %}Item Order{% endblock %}
+
+{% block content %}
+    <h1>Item Order</h1>
+    {% if error_message %}
+    	<p><strong>
+    		{{error_message}}
+    	</strong></p>
+    {% endif %}
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">Item Order</h5>
+            <form role="form" action="" method="post">
+                {% csrf_token %}
+                {% include 'orders/form-template.html' %}
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}
+
+{% block footer %}{% endblock %}

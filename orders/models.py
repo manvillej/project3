@@ -1,5 +1,43 @@
 from django.db import models
 import uuid
+from django.contrib.auth.models import AbstractUser
+from django.contrib.auth import get_user_model
+
+# https://docs.djangoproject.com/en/2.0/topics/auth/customizing/#using-a-custom-user-model-when-starting-a-project
+new = '01'
+ordered = '02'
+complete = '03'
+
+
+class Cart(models.Model):
+    # TODO: Cart Docstring
+    customer =  models.ForeignKey(
+      get_user_model(),
+      on_delete=models.CASCADE,
+    )
+
+    STATES = (
+        (new, 'New'),
+        (ordered, 'Ordered'),
+        (complete, 'Complete'),
+    )
+
+    state = models.CharField(
+        max_length=2,
+        choices=STATES,
+        default=new,
+    )
+
+    def __str__(self):
+        return f'Customer={self.customer}, state={self.get_state_display()}'
+
+    @property
+    def price(self):
+        total = 0
+        for order in self.ordered_items.all():
+            total = total + order.price
+        return total
+
 
 # Create your models here.
 class ItemType(models.Model):
@@ -76,6 +114,29 @@ class Size(models.Model):
     price = models.DecimalField(max_digits=6, decimal_places=2)
 
     def __str__(self):
-        return f'{self.item} - {self.name} - {self.price}'
+        return f'{self.item} - {self.get_name_display()} - {self.price}'
 
 
+class OrderedItem(models.Model):
+    # TODO: OrderedItems Docstring
+    cart = models.ForeignKey(
+        Cart,
+        on_delete=models.CASCADE,
+        related_name="ordered_items",
+        )
+    item = models.ForeignKey(
+        Item,
+        on_delete=models.CASCADE,
+        )
+    size = models.ForeignKey(
+        Size,
+        on_delete=models.CASCADE,
+        )
+
+    @property
+    def price(self):
+        """"""
+        return self.size.price
+
+    def __str__(self):
+        return f'{self.size.get_name_display()} {self.item.name} {self.item.item_type.name} - ${self.price}'

@@ -1,3 +1,3 @@
-<a class="list-group-item list-group-item-action" href="#">
+<a class="list-group-item list-group-item-action" href="https://ide50-jmanville.cs50.io/food/{{item.id}}/">
     {{item.name}} - {% for size in item.size.all %}{{size.get_name_display}} - ${{size.price}} {% endfor %}
 </a>
