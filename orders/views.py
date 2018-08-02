@@ -7,6 +7,7 @@ from django.views.generic import View
 from django.template import loader
 from .forms import UserForm, BasicFoodForm, CheckoutForm, OneToppingFoodForm, TwoToppingFoodForm, ThreeToppingFoodForm, FiveToppingFoodForm
 from .models import ItemType, Item, Cart, OrderedItem, Size, new, ordered, complete, OrderedTopping
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 # Create your views here.
 def index(request):
@@ -16,6 +17,7 @@ def index(request):
 
     # context for passing user and cart info.
     current_user = request.user
+    # db operations crash is user isnt logged in
     if(current_user.is_authenticated):
         cart = Cart.objects.filter(customer=current_user, state=new).first()
         context['current_user'] = request.user
@@ -34,6 +36,7 @@ def menu(request):
 
     # context for passing user and cart info.
     current_user = request.user
+    # db operations crash is user isnt logged in
     if(current_user.is_authenticated):
         cart = Cart.objects.filter(customer=current_user, state=new).first()
         context['current_user'] = request.user
@@ -44,6 +47,12 @@ def menu(request):
 
 def carts(request):
     # TODO: docstring
+
+    # non staff shouldn't access this page
+    current_user = request.user
+    if(not current_user.is_staff):
+        return redirect('menu')
+
     template = loader.get_template("orders/carts.html")
     current_user = request.user
     carts = Cart.objects.filter(state=ordered)
@@ -100,7 +109,7 @@ class UserFormView(View):
         return render(request, self.template_name, {'form': form})
 
 
-class BasicFoodFormView(View):
+class BasicFoodFormView(LoginRequiredMixin, View):
     """"""
     # TODO: UserFormView class docstring
     form_class = BasicFoodForm
@@ -182,16 +191,22 @@ class BasicFoodFormView(View):
 
         return render(request, self.template_name, {'form': form})
 
-class OrderedCartView(View):
+class OrderedCartView(LoginRequiredMixin, View):
     form_class = CheckoutForm
     template_name = "orders/checkout_form.html"
 
     def get(self, request, cart_id):
         """display a blank form"""
         # TODO: UserFormView.get docstring
+
+        # non staff shouldn't access this page
+        current_user = request.user
+        if(not current_user.is_staff):
+            return redirect('menu')
+
+
         form = self.form_class()
 
-        current_user = request.user
         cart = Cart.objects.get(id=cart_id)
         context = {
             'cart':cart,
@@ -202,6 +217,12 @@ class OrderedCartView(View):
     def post(self, request, cart_id):
         """Process form data"""
         # TODO: UserFormView.post docstring
+
+        # non staff shouldn't access this page
+        current_user = request.user
+        if(not current_user.is_staff):
+            return redirect('menu')
+
         form = self.form_class(request.POST)
 
         if(form.is_valid()):
@@ -218,7 +239,7 @@ class OrderedCartView(View):
         return render(request, self.template_name, {'form': form})
 
 
-class CheckOutFormView(View):
+class CheckOutFormView(LoginRequiredMixin, View):
     """"""
     # TODO: UserFormView class docstring
     form_class = CheckoutForm
@@ -234,6 +255,10 @@ class CheckOutFormView(View):
         # need customer's current cart
         cart = Cart.objects.filter(customer=current_user, state=new).first()
 
+        # redirect to menu if cart is empty
+        if(not cart.ordered_items.all()):
+            return redirect('menu')
+
         context = {
             'current_user':request.user,
             'cart':cart,
@@ -248,13 +273,16 @@ class CheckOutFormView(View):
         """Process form data"""
         # TODO: UserFormView.post docstring
         form = self.form_class(request.POST)
+        current_user = request.user
+
+        # get current cart
+        cart = Cart.objects.filter(customer=current_user, state=new).first()
+
+        # redirect to menu if cart is empty
+        if(not cart.ordered_items.all()):
+            return redirect('menu')
 
         if(form.is_valid()):
-            current_user = request.user
-
-            # get current cart
-            cart = Cart.objects.filter(customer=current_user, state=new).first()
-
             # submit current cart
             cart.state = ordered
             cart.save()

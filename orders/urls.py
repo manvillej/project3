@@ -10,7 +10,7 @@ urlpatterns = [
     path('logout/', auth_views.logout,  {'next_page': '/'}, name="logout"),
     path("menu", views.menu, name="menu"),
     path('food/<int:item_id>/', views.BasicFoodFormView.as_view()),
-    path('checkout', views.CheckOutFormView.as_view()),
+    path('checkout', views.CheckOutFormView.as_view(), name="checkout"),
     path('carts/<int:cart_id>', views.OrderedCartView.as_view(), name="carts"),
     path('carts', views.carts, name="carts"),
 ]

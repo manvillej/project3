@@ -4,7 +4,9 @@
             {{current_user}}'s Cart
         </h5>
         <ul class="list-group list-group-flush">
-            <a href="/checkout" class="btn btn-outline-primary btn-sm" role="button" aria-pressed="true">Checkout</a>
+            {% if cart.ordered_items.all %}
+                <a href="{% url 'checkout' %}" class="btn btn-outline-primary btn-sm" role="button" aria-pressed="true">Checkout</a>
+            {% endif %}
             {% include 'orders/components/cart.html' %}
         </ul>
     </div>
