@@ -1,7 +1,7 @@
 <div class="card">
     <div class="card-body">
         <h5 class="card-title">
-            {{cart.customer}}'s Cart <a href="#" class="btn btn-outline-primary btn-sm" role="button" aria-pressed="true">Complete</a>
+            {{cart.customer}}'s Cart <a href="{% url 'carts' cart.id %}" class="btn btn-outline-primary btn-sm" role="button" aria-pressed="true">Complete</a>
         </h5>
         <ul class="list-group list-group-flush">
             {% include 'orders/components/cart.html' %}

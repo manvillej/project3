@@ -47,6 +47,7 @@ def carts(request):
     }
     return HttpResponse(template.render(context, request))
 
+
 class UserFormView(View):
     """"""
     # TODO: UserFormView class docstring
@@ -173,6 +174,41 @@ class BasicFoodFormView(View):
                     ordered_topping.save()
 
             return redirect('menu')
+
+        return render(request, self.template_name, {'form': form})
+
+class OrderedCartView(View):
+    form_class = CheckoutForm
+    template_name = "orders/checkout_form.html"
+
+    def get(self, request, cart_id):
+        """display a blank form"""
+        # TODO: UserFormView.get docstring
+        form = self.form_class()
+
+        current_user = request.user
+        cart = Cart.objects.get(id=cart_id)
+        context = {
+            'cart':cart,
+            'form': form,
+        }
+        return render(request, self.template_name, context)
+
+    def post(self, request, cart_id):
+        """Process form data"""
+        # TODO: UserFormView.post docstring
+        form = self.form_class(request.POST)
+
+        if(form.is_valid()):
+
+            # get cart
+            cart = Cart.objects.get(id=cart_id)
+
+            # complete cart
+            cart.state = complete
+            cart.save()
+
+            return redirect('carts')
 
         return render(request, self.template_name, {'form': form})
 
