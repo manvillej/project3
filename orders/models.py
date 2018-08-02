@@ -59,6 +59,15 @@ class Item(models.Model):
     name = models.CharField(max_length=64)
     description = models.CharField(max_length=400)
 
+    CHOICES = (
+        (0, 'None'),
+        (1, 'One'),
+        (2, 'Two'),
+        (3, 'Three'),
+        (5, 'Five'),
+    )
+    num_toppings =  models.IntegerField(choices=CHOICES)
+
     def __str__(self):
         return f'{self.item_type}:{self.name}'
 
